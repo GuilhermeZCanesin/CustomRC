@@ -1,0 +1,377 @@
+<!doctype html><meta charset="utf-8">
+<title>Fiação do Carrinho RC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#f3f5f7; --panel:#ffffff; --fg:#1a1f26; --muted:#5a6572; --line:#d5dbe2;
+  --bat:#cf3a2c; --v5:#d27a12; --v33:#23875a; --sig:#2a62d6; --ph:#8452c4;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0f1318; --panel:#161b22; --fg:#e4e8ee; --muted:#98a3b1; --line:#2a323c;
+    --bat:#ff6d5e; --v5:#f3a64a; --v33:#4fc98b; --sig:#6f9dff; --ph:#b48cf0;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0f1318; --panel:#161b22; --fg:#e4e8ee; --muted:#98a3b1; --line:#2a323c;
+  --bat:#ff6d5e; --v5:#f3a64a; --v33:#4fc98b; --sig:#6f9dff; --ph:#b48cf0;
+}
+body{background:var(--bg);color:var(--fg);font:15px/1.55 var(--sans);padding-inline:16px;padding-block:28px 56px}
+main{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:36px}
+h1{font-size:28px;line-height:1.2;margin:0 0 8px;font-weight:600;text-wrap:balance}
+h2{font-size:20px;margin:0 0 6px;font-weight:600;text-wrap:balance}
+p{margin:0;max-width:68ch}
+.lead{color:var(--muted)}
+.eyebrow{font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+section{display:flex;flex-direction:column;gap:14px}
+.legend{display:flex;flex-wrap:wrap;gap:10px 22px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.legend i{display:inline-block;width:26px;height:0;border-top:3px solid}
+.legend .x{font:600 14px var(--mono);color:var(--bat)}
+figure{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px}
+.scroll{overflow-x:auto}
+figure svg{display:block;width:100%;min-width:760px;height:auto}
+figcaption{font-size:13px;color:var(--muted);padding:10px 4px 2px;max-width:80ch}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:560px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+td code,p code,li code{font:500 13px var(--mono)}
+td:first-child{white-space:nowrap}
+.chk{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px;max-width:78ch}
+.warn{border-left:3px solid var(--v5);padding:8px 12px;background:var(--panel);border-radius:0 6px 6px 0;font-size:14px;max-width:78ch}
+/* svg */
+.w{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.bat{stroke:var(--bat)} .v5{stroke:var(--v5)} .v33{stroke:var(--v33)} .sig{stroke:var(--sig)} .gnd{stroke:var(--fg)} .ph{stroke:var(--ph);stroke-width:1.6}
+.box{fill:var(--panel);stroke:var(--fg);stroke-width:1.4}
+.mcu{fill:var(--bg);stroke:var(--fg);stroke-width:1.6}
+.t{fill:var(--fg);font:600 12.5px var(--sans)}
+.m{fill:var(--muted);font:400 11px var(--sans)}
+.pin{fill:var(--fg);font:500 10.5px var(--mono)}
+.tv5{fill:var(--v5);font:600 11px var(--sans)} .tv33{fill:var(--v33);font:600 11px var(--mono)} .tbat{fill:var(--bat);font:600 11px var(--mono)}
+.dot{fill:var(--fg)} .dbat{fill:var(--bat)} .dv5{fill:var(--v5)} .dsig{fill:var(--sig)}
+.xm{stroke:var(--bat);stroke-width:2.2;stroke-linecap:round}
+.res{fill:var(--panel);stroke:var(--fg);stroke-width:1.4}
+</style>
+
+<main>
+  <header>
+    <div class="eyebrow">RC Controller · parte elétrica · F0</div>
+    <h1>Fiação do carrinho e do controle</h1>
+    <p class="lead">O ESP do carro sai da saída 5 V do multiplexador, o servo usa o BEC de um único ESC e tudo que entra no ADC fica abaixo de 3,3 V. Os pinos de sinal dos ESCs e do servo são os mesmos do código atual, então a mudança é só na alimentação.</p>
+  </header>
+
+  <div class="legend" aria-label="Legenda das cores dos fios">
+    <span><i style="border-color:var(--bat)"></i>Bateria 14,8–16,8 V</span>
+    <span><i style="border-color:var(--v5)"></i>5–6 V</span>
+    <span><i style="border-color:var(--v33)"></i>3,3 V</span>
+    <span><i style="border-color:var(--sig)"></i>Sinal</span>
+    <span><i style="border-color:var(--fg)"></i>GND</span>
+    <span><i style="border-color:var(--ph)"></i>Fases do motor</span>
+    <span><b class="x">✕</b>vermelho do BEC isolado</span>
+    <span>● = conexão · cruzamento sem ● = sem conexão</span>
+  </div>
+
+  <section>
+    <div>
+      <h2>Carro</h2>
+      <p>ESP e servo ficam em fontes separadas: o ESP na saída 5 V do multiplexador, o servo no BEC do ESC traseiro esquerdo. Nos outros três ESCs, o vermelho do conector de servo é isolado; sinal e GND continuam ligados.</p>
+    </div>
+    <figure>
+      <div class="scroll">
+      <svg viewBox="0 0 1000 720" role="img" aria-label="Esquema do carro: bateria 4S passa pela chave e alimenta o barramento; quatro ESCs e um UBEC saem do barramento; só o BEC do ESC traseiro esquerdo alimenta o VIN do ESP32; o UBEC de 6 V alimenta só o servo; divisor de tensão leva a bateria ao GPIO36.">
+        <!-- battery + switch -->
+        <rect class="box" x="20" y="36" width="140" height="68" rx="4"/>
+        <text class="t" x="90" y="64" text-anchor="middle">LiPo 4S 2200 mAh</text>
+        <text class="m" x="90" y="82" text-anchor="middle">14,8–16,8 V</text>
+                <text class="pin" x="30" y="98">−</text>
+        <path class="w bat" d="M160 60 H210"/>
+        <rect class="box" x="210" y="44" width="90" height="32" rx="4"/>
+        <text class="t" x="255" y="65" text-anchor="middle">Chave geral</text>
+        <path class="w bat" d="M300 60 H330 V250"/>
+        <path class="w gnd" d="M40 104 V265"/>
+        <!-- buses -->
+        <path class="w bat" d="M60 250 H960"/>
+        <path class="w gnd" d="M40 265 H960"/>
+        <circle class="dbat" cx="330" cy="250" r="3.6"/>
+        <text class="m" x="90" y="242">barramento / multiplexador (após a chave)</text>
+        <text class="tbat" x="966" y="254">+BAT</text>
+        <text class="pin" x="966" y="269">GND</text>
+
+        <!-- motors -->
+        <g>
+          <circle class="box" cx="415" cy="60" r="26"/><text class="t" x="415" y="65" text-anchor="middle">M</text>
+          <text class="t" x="449" y="56">2450kv</text><text class="m" x="449" y="71">tras. esq.</text>
+          <circle class="box" cx="575" cy="60" r="26"/><text class="t" x="575" y="65" text-anchor="middle">M</text>
+          <text class="t" x="609" y="56">2450kv</text><text class="m" x="609" y="71">tras. dir.</text>
+          <circle class="box" cx="735" cy="60" r="26"/><text class="t" x="735" y="65" text-anchor="middle">M</text>
+          <text class="t" x="769" y="56">1000kv</text><text class="m" x="769" y="71">diant. esq.</text>
+          <circle class="box" cx="895" cy="60" r="26"/><text class="t" x="895" y="65" text-anchor="middle">M</text>
+          <text class="t" x="929" y="56">1000kv</text><text class="m" x="929" y="71">diant. dir.</text>
+        </g>
+        <path class="w ph" d="M403 83 V120 M415 86 V120 M427 83 V120"/>
+        <path class="w ph" d="M563 83 V120 M575 86 V120 M587 83 V120"/>
+        <path class="w ph" d="M723 83 V120 M735 86 V120 M747 83 V120"/>
+        <path class="w ph" d="M883 83 V120 M895 86 V120 M907 83 V120"/>
+
+        <!-- ESCs -->
+        <rect class="box" x="350" y="120" width="130" height="80" rx="4"/>
+        <text class="t" x="415" y="148" text-anchor="middle">ESC 40A bi</text>
+        <text class="m" x="415" y="165" text-anchor="middle">traseira esq.</text>
+        <text class="tv5" x="415" y="186" text-anchor="middle">BEC → servo</text>
+        <rect class="box" x="510" y="120" width="130" height="80" rx="4"/>
+        <text class="t" x="575" y="148" text-anchor="middle">ESC 40A bi</text>
+        <text class="m" x="575" y="165" text-anchor="middle">traseira dir.</text>
+        <rect class="box" x="670" y="120" width="130" height="80" rx="4"/>
+        <text class="t" x="735" y="148" text-anchor="middle">ESC 30A uni</text>
+        <text class="m" x="735" y="165" text-anchor="middle">dianteira esq.</text>
+        <rect class="box" x="830" y="120" width="130" height="80" rx="4"/>
+        <text class="t" x="895" y="148" text-anchor="middle">ESC 30A uni</text>
+        <text class="m" x="895" y="165" text-anchor="middle">dianteira dir.</text>
+
+        <!-- ESC power from bus -->
+        <path class="w bat" d="M370 200 V250 M530 200 V250 M690 200 V250 M850 200 V250"/>
+        <path class="w gnd" d="M385 200 V265 M545 200 V265 M705 200 V265 M865 200 V265"/>
+        <g class="dbat"><circle cx="370" cy="250" r="3.6"/><circle cx="530" cy="250" r="3.6"/><circle cx="690" cy="250" r="3.6"/><circle cx="850" cy="250" r="3.6"/></g>
+        <g class="dot"><circle cx="385" cy="265" r="3.6"/><circle cx="545" cy="265" r="3.6"/><circle cx="705" cy="265" r="3.6"/><circle cx="865" cy="265" r="3.6"/></g>
+
+        <!-- servo leads: signal -->
+        <path class="w sig" d="M430 200 V480 M590 200 V480 M750 200 V480 M910 200 V480"/>
+        <!-- servo leads: BEC 5V (only RL used) -->
+        <path class="w v5" d="M445 200 V280 H175 V520 H160"/>
+        <path class="w v5" d="M605 200 V296 M765 200 V296 M925 200 V296"/>
+        <path class="xm" d="M600 299 L610 309 M610 299 L600 309 M760 299 L770 309 M770 299 L760 309 M920 299 L930 309 M930 299 L920 309"/>
+        <!-- servo leads: GND to logic GND rail -->
+        <path class="w gnd" d="M460 200 V440 M620 200 V440 M780 200 V440 M940 200 V480"/>
+        <path class="w gnd" d="M460 440 H940"/>
+        <g class="dot"><circle cx="460" cy="440" r="3.6"/><circle cx="620" cy="440" r="3.6"/><circle cx="780" cy="440" r="3.6"/><circle cx="940" cy="440" r="3.6"/></g>
+        <!-- ESP32 car -->
+        <rect class="mcu" x="380" y="480" width="580" height="120" rx="6"/>
+        <text class="pin" transform="translate(434,488) rotate(-90)" text-anchor="end">IO27</text>
+                <text class="pin" transform="translate(594,488) rotate(-90)" text-anchor="end">IO26</text>
+        <text class="pin" transform="translate(754,488) rotate(-90)" text-anchor="end">IO32</text>
+        <text class="pin" transform="translate(914,488) rotate(-90)" text-anchor="end">IO33</text>
+        <text class="pin" transform="translate(944,488) rotate(-90)" text-anchor="end">GND</text>
+        <text class="t" x="680" y="548" text-anchor="middle">ESP32-WROOM-32U · carro</text>
+        <text class="pin" x="388" y="504">VIN</text>
+        <text class="pin" x="388" y="534">IO36 (VP)</text>
+        <text class="pin" x="388" y="564">IO25</text>
+        <text class="pin" transform="translate(724,594) rotate(-90)">3V3</text>
+        <text class="pin" transform="translate(764,594) rotate(-90)">GND</text>
+        <text class="pin" transform="translate(804,594) rotate(-90)">IO21</text>
+        <text class="pin" transform="translate(844,594) rotate(-90)">IO22</text>
+
+        <!-- OLED -->
+        <path class="w v33" d="M720 600 V640"/>
+        <path class="w gnd" d="M760 600 V640"/>
+        <path class="w sig" d="M800 600 V640 M840 600 V640"/>
+        <rect class="box" x="700" y="640" width="180" height="56" rx="4"/>
+        <text class="t" x="790" y="664" text-anchor="middle">OLED 0,91" SSD1306</text>
+        <text class="m" x="790" y="682" text-anchor="middle">128×32 · SDA/SCL · opcional</text>
+
+        <!-- UBEC + servo -->
+        <path class="w bat" d="M60 250 V300"/>
+        <path class="w gnd" d="M75 265 V300"/>
+        <circle class="dbat" cx="60" cy="250" r="3.6"/>
+        <circle class="dot" cx="75" cy="265" r="3.6"/>
+        <rect class="box" x="30" y="300" width="130" height="56" rx="4"/>
+        <text class="t" x="95" y="324" text-anchor="middle">Saída 5 V</text>
+        <text class="m" x="95" y="342" text-anchor="middle">multiplexador · só ESP</text>
+        <path class="w v5" d="M110 356 V470 H360 V500 H380"/>
+        <path class="w gnd" d="M75 356 V372 M65 372 H85 M69 377 H81 M73 382 H77"/>
+        <circle class="dv5" cx="250" cy="470" r="3.6"/>
+        <path class="w v5" d="M250 470 V482"/>
+        <path class="w gnd" d="M238 482 H262 M238 489 H262 M250 489 V500 M240 500 H260 M244 505 H256 M248 510 H252"/>
+        <text class="t" x="268" y="490">C1</text>
+        <text class="m" x="268" y="504">470 µF 50 V</text>
+        <rect class="box" x="30" y="500" width="130" height="80" rx="4"/>
+        <text class="t" x="95" y="528" text-anchor="middle">Servo MG996R</text>
+        <text class="m" x="95" y="546" text-anchor="middle">direção · 5 V do BEC</text>
+        <path class="w gnd" d="M95 580 V590 M85 590 H105 M89 595 H101 M93 600 H97"/>
+        <path class="w sig" d="M380 560 H160"/>
+
+        <!-- battery divider -->
+        <path class="w bat" d="M200 250 V290"/>
+        <circle class="dbat" cx="200" cy="250" r="3.6"/>
+        <rect class="res" x="192" y="290" width="16" height="40" rx="2"/>
+        <text class="t" x="214" y="308">R1</text><text class="m" x="214" y="322">100 kΩ</text>
+        <path class="w gnd" d="M200 330 V380"/>
+        <circle class="dot" cx="200" cy="360" r="3.6"/>
+        <rect class="res" x="192" y="380" width="16" height="40" rx="2"/>
+        <text class="t" x="214" y="398">R2</text><text class="m" x="214" y="412">22 kΩ</text>
+        <path class="w gnd" d="M200 420 V440 M188 440 H212 M192 445 H208 M196 450 H204"/>
+        <path class="w sig" d="M200 360 H340 V530 H380"/>
+        <circle class="dsig" cx="290" cy="360" r="3.6"/>
+        <path class="w sig" d="M290 360 V378"/>
+        <path class="w gnd" d="M278 378 H302 M278 385 H302 M290 385 V398 M280 398 H300 M284 403 H296 M288 408 H292"/>
+        <text class="m" x="290" y="426" text-anchor="middle">C2 1 µF 63 V</text>
+        <text class="m" x="348" y="418">≈3,0 V</text>
+        <text class="m" x="348" y="432">a 16,8 V</text>
+      </svg>
+      </div>
+      <figcaption>Três redes de alimentação separadas: bateria para ESCs e multiplexador, 5 V do multiplexador só para o ESP (com C1), 5 V do BEC do ESC traseiro esquerdo só para o servo. Todos os GND são a mesma rede (negativo da bateria), mas R2, C2 e C1 aterram no pino GND do ESP.</figcaption>
+    </figure>
+
+    <div class="tbl">
+      <table>
+        <thead><tr><th>ESP32 carro</th><th>Liga em</th><th>Observação</th></tr></thead>
+        <tbody>
+          <tr><td><code>IO27</code></td><td>Sinal ESC traseira esq.</td><td>Igual ao código atual</td></tr>
+          <tr><td><code>IO26</code></td><td>Sinal ESC traseira dir.</td><td>Igual ao código atual</td></tr>
+          <tr><td><code>IO32</code></td><td>Sinal ESC dianteira esq.</td><td>Igual ao código atual</td></tr>
+          <tr><td><code>IO33</code></td><td>Sinal ESC dianteira dir.</td><td>Igual ao código atual</td></tr>
+          <tr><td><code>IO25</code></td><td>Sinal servo MG996R</td><td>Servo alimentado pelo BEC do ESC traseira esq., não pelo ESP</td></tr>
+          <tr><td><code>IO36 (VP)</code></td><td>Nó do divisor R1/R2</td><td>Só entrada, ADC1; C2 1 µF 63 V eletrolítico (listra no GND) filtra ruído dos motores. GND de R2 e C2 vai no pino GND do ESP, não direto no multiplexador</td></tr>
+          <tr><td><code>IO21 / IO22</code></td><td>SDA / SCL do OLED</td><td>OLED em 3V3</td></tr>
+          <tr><td><code>VIN</code></td><td>Saída 5 V do multiplexador</td><td>C1 470 µF 50 V (Yageo) entre VIN e GND, perto do ESP, listra no GND. Nenhum vermelho de ESC chega no ESP</td></tr>
+          <tr><td><code>GND</code></td><td>GND dos 4 conectores de ESC</td><td>Comum com bateria, multiplexador e servo</td></tr>
+          <tr><td><code>IO0 / IO2</code></td><td>Botão BOOT / LED da placa</td><td>Sem fiação: pareamento e status no futuro</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div>
+      <h2>Controle</h2>
+      <p>Os HW-504 passam a ser alimentados em 3,3 V; o pino marcado “+5V” no módulo recebe 3V3. Os botões de trim ficam nos pinos atuais, e os cliques dos analógicos viram armar e menu.</p>
+    </div>
+    <figure>
+      <div class="scroll">
+      <svg viewBox="0 0 900 520" role="img" aria-label="Esquema do controle: dois HW-504 em 3,3 V ligados a IO35 e IO34, cliques em IO13 e IO14, quatro botões de trim de IO5, IO18, IO19 e IO23 para GND, OLED SH1106 em IO21 e IO22.">
+        <!-- power -->
+        <rect class="box" x="430" y="40" width="190" height="50" rx="4"/>
+        <text class="t" x="525" y="61" text-anchor="middle">Alimentação 5 V</text>
+        <text class="m" x="525" y="78" text-anchor="middle">USB ou 18650 + boost</text>
+        <path class="w v5" d="M500 90 V140"/>
+        <path class="w gnd" d="M590 90 V104 M580 104 H600 M584 109 H596 M588 114 H592"/>
+        <path class="w v33" d="M400 140 V120"/>
+        <text class="tv33" x="400" y="112" text-anchor="middle">3V3</text>
+
+        <!-- ESP -->
+        <rect class="mcu" x="340" y="140" width="220" height="260" rx="6"/>
+        <text class="pin" x="400" y="160" text-anchor="middle">3V3</text>
+        <text class="pin" x="500" y="160" text-anchor="middle">VIN</text>
+        <text class="pin" x="348" y="184">IO35</text>
+        <text class="pin" x="348" y="224">IO13</text>
+        <text class="pin" x="348" y="304">IO34</text>
+        <text class="pin" x="348" y="344">IO14</text>
+        <text class="pin" x="552" y="184" text-anchor="end">IO5</text>
+        <text class="pin" x="552" y="234" text-anchor="end">IO18</text>
+        <text class="pin" x="552" y="284" text-anchor="end">IO19</text>
+        <text class="pin" x="552" y="334" text-anchor="end">IO23</text>
+        <text class="pin" x="380" y="392" text-anchor="middle">GND</text>
+        <text class="pin" x="450" y="392" text-anchor="middle">IO21</text>
+        <text class="pin" x="500" y="392" text-anchor="middle">IO22</text>
+        <text class="t" x="450" y="262" text-anchor="middle">ESP32-WROOM-32U</text>
+        <text class="m" x="450" y="279" text-anchor="middle">controle</text>
+
+        <!-- HW-504 throttle -->
+        <rect class="box" x="30" y="120" width="170" height="135" rx="4"/>
+        <text class="t" x="110" y="142" text-anchor="middle">HW-504 · aceleração</text>
+        <text class="pin" x="192" y="184" text-anchor="end">VRy</text>
+        <text class="pin" x="192" y="204" text-anchor="end">+5V</text>
+        <text class="pin" x="192" y="224" text-anchor="end">SW</text>
+        <text class="pin" x="192" y="244" text-anchor="end">GND</text>
+        <text class="m" x="40" y="204">VRx não usado</text>
+        <path class="w sig" d="M200 180 H340 M200 220 H340"/>
+        <path class="w v33" d="M200 200 H232"/>
+        <text class="tv33" x="238" y="204">3V3</text>
+        <path class="w gnd" d="M200 240 H215 V250 M205 250 H225 M209 255 H221 M213 260 H217"/>
+        <text class="m" x="270" y="174" text-anchor="middle">acelerador</text>
+        <text class="m" x="270" y="214" text-anchor="middle">armar</text>
+
+        <!-- HW-504 steering -->
+        <rect class="box" x="30" y="270" width="170" height="110" rx="4"/>
+        <text class="t" x="110" y="290" text-anchor="middle">HW-504 · direção</text>
+        <text class="pin" x="192" y="304" text-anchor="end">VRx</text>
+        <text class="pin" x="192" y="324" text-anchor="end">+5V</text>
+        <text class="pin" x="192" y="344" text-anchor="end">SW</text>
+        <text class="pin" x="192" y="364" text-anchor="end">GND</text>
+        <text class="m" x="40" y="324">VRy não usado</text>
+        <path class="w sig" d="M200 300 H340 M200 340 H340"/>
+        <path class="w v33" d="M200 320 H232"/>
+        <text class="tv33" x="238" y="324">3V3</text>
+        <path class="w gnd" d="M200 360 H215 V370 M205 370 H225 M209 375 H221 M213 380 H217"/>
+        <text class="m" x="270" y="294" text-anchor="middle">direção</text>
+        <text class="m" x="270" y="334" text-anchor="middle">menu</text>
+
+        <!-- trim buttons -->
+        <g>
+          <path class="w sig" d="M560 180 H656 M560 230 H656 M560 280 H656 M560 330 H656"/>
+          <g class="dot">
+            <circle cx="660" cy="180" r="3.4"/><circle cx="696" cy="180" r="3.4"/>
+            <circle cx="660" cy="230" r="3.4"/><circle cx="696" cy="230" r="3.4"/>
+            <circle cx="660" cy="280" r="3.4"/><circle cx="696" cy="280" r="3.4"/>
+            <circle cx="660" cy="330" r="3.4"/><circle cx="696" cy="330" r="3.4"/>
+          </g>
+          <path class="w gnd" d="M654 170 H702 M678 170 V162 M654 220 H702 M678 220 V212 M654 270 H702 M678 270 V262 M654 320 H702 M678 320 V312"/>
+          <path class="w gnd" d="M700 180 H730 V188 M720 188 H740 M724 193 H736 M728 198 H732"/>
+          <path class="w gnd" d="M700 230 H730 V238 M720 238 H740 M724 243 H736 M728 248 H732"/>
+          <path class="w gnd" d="M700 280 H730 V288 M720 288 H740 M724 293 H736 M728 298 H732"/>
+          <path class="w gnd" d="M700 330 H730 V338 M720 338 H740 M724 343 H736 M728 348 H732"/>
+          <text class="t" x="752" y="184">Trim ACC −</text>
+          <text class="t" x="752" y="234">Trim ACC +</text>
+          <text class="t" x="752" y="284">Trim STR +</text>
+          <text class="t" x="752" y="334">Trim STR −</text>
+        </g>
+
+        <!-- OLED -->
+        <path class="w gnd" d="M380 400 V420 H410 V440 M380 420 H360 V428 M350 428 H370 M354 433 H366 M358 438 H362"/>
+        <circle class="dot" cx="380" cy="420" r="3.4"/>
+        <path class="w sig" d="M450 400 V440 M500 400 V440"/>
+        <path class="w v33" d="M530 440 V424"/>
+        <text class="tv33" x="536" y="424">3V3</text>
+        <rect class="box" x="360" y="440" width="200" height="66" rx="4"/>
+        <text class="pin" x="410" y="456" text-anchor="middle">GND</text>
+        <text class="pin" x="450" y="456" text-anchor="middle">SDA</text>
+        <text class="pin" x="500" y="456" text-anchor="middle">SCL</text>
+        <text class="pin" x="530" y="456" text-anchor="middle">VCC</text>
+        <text class="t" x="460" y="478" text-anchor="middle">OLED 1,3" SH1106</text>
+        <text class="m" x="460" y="496" text-anchor="middle">DST-013 · 128×64 · I²C 0x3C</text>
+      </svg>
+      </div>
+      <figcaption>Todos os “3V3” e símbolos de terra são a mesma rede: 3V3 sai do pino 3V3 do ESP, GND é o GND do ESP. Botões usam pull-up interno, então não precisam de resistor.</figcaption>
+    </figure>
+
+    <div class="tbl">
+      <table>
+        <thead><tr><th>ESP32 controle</th><th>Liga em</th><th>Observação</th></tr></thead>
+        <tbody>
+          <tr><td><code>IO35</code></td><td>VRy do HW-504 de aceleração</td><td>ADC1, só entrada; 100 nF para GND opcional</td></tr>
+          <tr><td><code>IO34</code></td><td>VRx do HW-504 de direção</td><td>ADC1, só entrada; 100 nF para GND opcional</td></tr>
+          <tr><td><code>IO13</code></td><td>SW do HW-504 de aceleração</td><td>Armar/desarmar (segurar 1 s)</td></tr>
+          <tr><td><code>IO14</code></td><td>SW do HW-504 de direção</td><td>Menu / calibração</td></tr>
+          <tr><td><code>IO5</code></td><td>Trim ACC −</td><td>Pino de strapping: não segurar no boot</td></tr>
+          <tr><td><code>IO18</code></td><td>Trim ACC +</td><td>Igual ao código atual</td></tr>
+          <tr><td><code>IO19</code></td><td>Trim STR +</td><td>Igual ao código atual</td></tr>
+          <tr><td><code>IO23</code></td><td>Trim STR −</td><td>Igual ao código atual</td></tr>
+          <tr><td><code>IO21 / IO22</code></td><td>SDA / SCL do OLED SH1106</td><td>I²C a 400 kHz</td></tr>
+          <tr><td><code>3V3</code></td><td>“+5V” dos dois HW-504, VCC do OLED</td><td>Nunca 5 V no HW-504: o ADC passa de 3,3 V</td></tr>
+          <tr><td><code>VIN</code></td><td>Fonte 5 V do controle</td><td>Confirmar a fonte atual</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Antes de ligar</h2>
+    <p class="warn">O ZMR 40A pode ser versão OPTO, sem BEC. Meça antes de escolher qual ESC alimenta o servo. Se nenhum tiver BEC, o servo só pode ir para a saída 5 V do multiplexador se ela for de 3 A ou mais; abaixo disso, use um UBEC para o servo.</p>
+    <ol class="chk">
+      <li>Com a bateria ligada e os conectores de servo soltos, meça vermelho–preto de cada ESC. Anote quais dão ~5 V.</li>
+      <li>Escolha um ESC com BEC para o servo. Nos outros três, tire o pino vermelho do conector com uma agulha e isole com fita ou termo-retrátil. Não corte o fio.</li>
+      <li>Confira a corrente da saída 5 V do multiplexador (serigrafia ou modelo da placa). Para o ESP sozinho, 1 A já sobra.</li>
+      <li>Monte R1/R2 e meça o nó com a bateria cheia: deve dar ~3,0 V e nunca acima de 3,3 V. Só então ligue no IO36.</li>
+      <li>Solde C1 com a polaridade certa (listra no GND) e tensão de 10 V ou mais.</li>
+      <li>No controle, meça VRx/VRy com o módulo em 3V3: a faixa deve ficar entre 0 e 3,3 V.</li>
+      <li>Teste continuidade entre GND do ESP, negativo da bateria e GND do servo.</li>
+      <li>Primeiro teste com as rodas fora do chão. Segure o servo travado com a mão: o ESP não pode reiniciar.</li>
+    </ol>
+  </section>
+</main>
