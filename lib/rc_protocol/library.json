@@ -1,0 +1,7 @@
+{
+  "name": "rc_protocol",
+  "version": "0.1.0",
+  "description": "Pacotes, CRC, estatistica de link e mixer do CustomRC. Sem dependencia de Arduino, para rodar os testes no PC.",
+  "frameworks": "*",
+  "platforms": "*"
+}

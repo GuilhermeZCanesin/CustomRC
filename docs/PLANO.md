@@ -141,5 +141,5 @@ Pós-implementação: PS4 via Bluepad32, pareamento por botão, OTA, log de tele
 - [ ] Quais ESCs têm BEC; o 40A bidirecional vai direto para ré ou exige freio → neutro → ré?
 - [ ] ESCs aceitam PWM acima de 50 Hz?
 - [ ] Manter o OLED do carro?
-- [ ] Toolchain para F1: PlatformIO (recomendado) ou Arduino IDE; versão do core esp32.
+- [x] Toolchain para F1: **PlatformIO** com o fork pioarduino, core esp32 **3.3.12**. Ver CLAUDE.md.
 - [ ] Fonte de alimentação do controle.
